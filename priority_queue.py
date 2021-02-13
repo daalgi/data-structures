@@ -8,7 +8,8 @@ OUTPUT_COLUMN_WIDTH = 30
 
 def parent_node_index(i):
     """
-    Returns the index of the parent node in a Binary Heap
+    Returns the index of the parent node of a 
+    given node (index `i`) in a Binary Heap
 
     If index `i` is a left child node, 
     the parent is defined as (i - 1) // 2.
@@ -22,6 +23,22 @@ def parent_node_index(i):
     return (i - addend) // 2
 
 
+def child_left_node_index(i):
+    """
+    Returns the index of the child left node of a 
+    given node (index `i`) in a Binary Heap
+    """
+    return 2 * i + 1
+
+
+def child_right_node_index(i):
+    """
+    Returns the index of the child right node of a 
+    given node (index `i`) in a Binary Heap
+    """
+    return 2 * i + 2
+
+
 class PriorityQueue:
     def __init__(self, array: list = None):
         self.array = [] if not array else array
@@ -33,6 +50,9 @@ class PriorityQueue:
                 self.hashtable[elem].append(i)
         
     def add(self, element, verbose: bool = False):
+        """
+        Adds an element (value)
+        """
         # Add to bottom left
         self.array.append(element)
         self.size += 1
@@ -73,7 +93,54 @@ class PriorityQueue:
 
         return self
 
+    def remove(self, element):
+        """
+        Searches an element (value) and removes the node
+        """
+        if element not in self.hashtable:
+            print(f'Element {element} not in the PriorityQueue.')
+
+        # Last index containing `element`
+        index = self.hashtable[element][-1]
+
+        # Last index in the PriorityQueue
+        last = self.size - 1
+
+        # Swap with last node
+        if index < last:
+            self._swap(index, last)
+
+        # Remove new last node
+        self.array.pop()
+        self.hashtable[element].remove(last)
+        self.size -= 1
+
+        if index == last:
+            return self
+
+        current = self.array[index]
+
+        # Compare to parent and child nodes and "bubble" up or down
+        c = self._smallest_child_index(index)
+        p = parent_node_index(index)
+
+        if p is not None and current < self.array[p]:
+            self._bubble_up(current, index, p)
+        elif c and current > self.array[c]:
+            self._bubble_down(current, index, c)
+        
+        return self
+
+    def poll(self):
+        """
+        Removes the root node
+        """
+        return self.remove(self.array[0])
+
     def _swap(self, i, j):
+        """
+        Swaps nodes by indices, updating self.array and self.hashtable
+        """
         # Elements value
         elem_i = self.array[i]
         elem_j = self.array[j]
@@ -86,6 +153,43 @@ class PriorityQueue:
         self.hashtable[elem_i].append(j)
         self.hashtable[elem_j].remove(j)
         self.hashtable[elem_j].append(i)
+
+    def _bubble_up(self, element, i: int, p: int):
+        """
+        Swaps nodes upwards until the heap invariance is satisfied
+        """
+        while p is not None and element < self.array[p]:
+            self._swap(i, p)            
+            if p == 0:
+                break            
+            i = p
+            p = parent_node_index(i)
+
+    def _bubble_down(self, element, i: int, c: int):
+        """
+        Swaps nodes downwards until the heap invariance is satisfied
+        """
+        while c < self.size and element > self.array[c]:
+            self._swap(i, c)
+            i = c
+            c = self._smallest_child_index(i)
+            if not c:
+                break
+
+    def _smallest_child_index(self, i: int):
+        left = child_left_node_index(i)
+        right = child_right_node_index(i)
+        
+        if left >= self.size:
+            return None
+        
+        if right >= self.size:
+            return left
+
+        if self.array[left] <= self.array[right]:
+            return left
+
+        return right
 
     def _verbose_swap_output(self, element, i, p, len_prev: int = 0):
         # Concatenate with previous line

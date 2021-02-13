@@ -106,7 +106,6 @@ class Test(unittest.TestCase):
         self.assertEqual(p.hashtable[11], [3])
         self.assertEqual(p.hashtable[8], [4])
 
-
     def test_add_with_initial_array(self):
         p = PriorityQueue([2, 7, 2, 11, 7, 13, 2])
         
@@ -140,3 +139,83 @@ class Test(unittest.TestCase):
         p.add(10)
         self.assertEqual(p.array, [0, 5, 1, 8, 6, 12, 4, 13, 12, 11, 7, 14, 13, 19, 10])
         
+    def test_remove_basic_cases(self):
+        p = PriorityQueue([0])
+        p.remove(0)
+        self.assertEqual(p.size, 0)
+        self.assertEqual(p.array, [])
+        self.assertEqual(p.hashtable[0], [])
+
+        p = PriorityQueue([0, 1])
+        p.remove(1)
+        self.assertEqual(p.size, 1)
+        self.assertEqual(p.array, [0])
+        self.assertEqual(p.hashtable[0], [0])
+        self.assertEqual(p.hashtable[1], [])
+
+        p = PriorityQueue([0, 1])
+        p.remove(0)
+        self.assertEqual(p.size, 1)
+        self.assertEqual(p.array, [1])
+        self.assertEqual(p.hashtable[0], [])
+        self.assertEqual(p.hashtable[1], [0])
+
+        p = PriorityQueue([0, 1, 2])
+        p.remove(0)
+        self.assertEqual(p.size, 2)
+        self.assertEqual(p.array, [1, 2])
+        self.assertEqual(p.hashtable[0], [])
+        self.assertEqual(p.hashtable[1], [0])
+        self.assertEqual(p.hashtable[2], [1])
+
+        p = PriorityQueue([0, 1, 2])
+        p.remove(1)
+        self.assertEqual(p.size, 2)
+        self.assertEqual(p.array, [0, 2])
+        self.assertEqual(p.hashtable[0], [0])
+        self.assertEqual(p.hashtable[1], [])
+        self.assertEqual(p.hashtable[2], [1])
+
+        p = PriorityQueue([0, 1, 2])
+        p.remove(2)
+        self.assertEqual(p.size, 2)
+        self.assertEqual(p.array, [0, 1])
+        self.assertEqual(p.hashtable[0], [0])
+        self.assertEqual(p.hashtable[1], [1])
+        self.assertEqual(p.hashtable[2], [])
+
+    def test_remove_example(self):
+        p = PriorityQueue([1, 5, 1, 8, 6, 2, 2, 13, 12, 11, 7, 2, 15, 3, 10])
+        
+        p.remove(1)
+        self.assertEqual(p.array, [1, 5, 2, 8, 6, 2, 2, 13, 12, 11, 7, 10, 15, 3])
+
+        p.remove(12)
+        self.assertEqual(p.array, [1, 3, 2, 5, 6, 2, 2, 13, 8, 11, 7, 10, 15])
+
+        p.remove(3)
+        self.assertEqual(p.array, [1, 5, 2, 8, 6, 2, 2, 13, 15, 11, 7, 10])
+
+        p.remove(1)
+        self.assertEqual(p.array, [2, 5, 2, 8, 6, 10, 2, 13, 15, 11, 7])
+
+        p.remove(6)
+        self.assertEqual(p.array, [2, 5, 2, 8, 7, 10, 2, 13, 15, 11])
+
+    def test_remove_poll_example(self):
+        p = PriorityQueue([1, 5, 1, 8, 6, 2, 2, 13, 12, 11, 7, 2, 15, 3, 10])
+        
+        p.poll()
+        self.assertEqual(p.array, [1, 5, 2, 8, 6, 2, 2, 13, 12, 11, 7, 10, 15, 3])
+
+        p.remove(12)
+        self.assertEqual(p.array, [1, 3, 2, 5, 6, 2, 2, 13, 8, 11, 7, 10, 15])
+
+        p.remove(3)
+        self.assertEqual(p.array, [1, 5, 2, 8, 6, 2, 2, 13, 15, 11, 7, 10])
+
+        p.poll()
+        self.assertEqual(p.array, [2, 5, 2, 8, 6, 10, 2, 13, 15, 11, 7])
+
+        p.remove(6)
+        self.assertEqual(p.array, [2, 5, 2, 8, 7, 10, 2, 13, 15, 11])
