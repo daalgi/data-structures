@@ -30,7 +30,7 @@ continuously grab the next most promising node.
 ## 3. TURNING MIN PQ INTO MAX PQ
 Since elements in a PQ are comparable, they implement some sort of comparable interface, which we can simply **negate** to achieve a Max heap.
 
-## 4. ACCESSING CHILDS IN A BINARY HEAP
+## 4. ACCESSING CHILDREN IN A BINARY HEAP
 Let `i` be the parent node index (zero based):
 - Left child index: `2i + 1`
 - Right child index: `2i + 2`
